@@ -31,8 +31,7 @@ void encrypt(
 void decrypt(
         void *original_encrypted_data,
         void *buffer,
-        size_t size_of_raw_data,
-        uint16_t chunks,
+        uint32_t number_of_bytes,
         key_pair *kp
         );
 #endif

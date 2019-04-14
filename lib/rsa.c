@@ -100,12 +100,30 @@ void encrypt(
         key_pair *kp
         ) {
     uint8_t *origin = (uint8_t*)original_raw_data;
-    uint16_t *buf = (uint16_t*)buffer;
+    uint8_t *buf = (uint8_t*)buffer;
     uint64_t public_key = kp->public_key;
     uint64_t base = kp->base;
     for(uint32_t i = 0; i < number_of_bytes; i++) {
         uint64_t data = origin[i];
         data = pow_((data % base), public_key) % base;
+        buf[i] = data;
+    }
+}
+
+
+void decrypt(
+        void *original_encrypted_data,
+        void *buffer,
+        uint32_t number_of_bytes,
+        key_pair *kp
+        ) {
+    uint8_t *origin = (uint8_t*)original_encrypted_data;
+    uint8_t *buf = (uint8_t*)buffer;
+    uint64_t private_key = kp->private_key;
+    uint64_t base = kp->base;
+    for(uint32_t i = 0; i < number_of_bytes; i++) {
+        uint64_t data = origin[i];
+        data = pow_((data % base), private_key) % base;
         buf[i] = data;
     }
 }
@@ -125,6 +143,12 @@ int main() {
     encrypt(
             (void*)data,
             (void*)encrypted,
+            strlen(data),
+            kp
+            );
+    decrypt(
+            (void*)data,
+            (void*)decrypted,
             strlen(data),
             kp
             );
