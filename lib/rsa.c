@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/random.h>
-#include <math.h>
 
 
 int is_prime(uint8_t number) {
@@ -85,7 +84,31 @@ void generate_key_pair(key_pair *kp) {
 }
 
 
+uint64_t pow_(uint64_t number, uint64_t degree) {
+    uint64_t result = 1;
+    for(int i=0; i < degree; i++) {
+        result *= number;
+    }
+    return result;
+}
 
+
+void encrypt(
+        void *original_raw_data,
+        void *buffer,
+        uint32_t number_of_bytes,
+        key_pair *kp
+        ) {
+    uint8_t *origin = (uint8_t*)original_raw_data;
+    uint16_t *buf = (uint16_t*)buffer;
+    uint64_t public_key = kp->public_key;
+    uint64_t base = kp->base;
+    for(uint32_t i = 0; i < number_of_bytes; i++) {
+        uint64_t data = origin[i];
+        data = pow_((data % base), public_key) % base;
+        buf[i] = data;
+    }
+}
 
 
 int main() {
@@ -99,10 +122,17 @@ int main() {
     printf("Public key: %u\n", kp->public_key);
     printf("Private key: %u\n", kp->private_key);
 
+    encrypt(
+            (void*)data,
+            (void*)encrypted,
+            strlen(data),
+            kp
+            );
 
     printf("Original: '%s'\n", data);
     printf("Encrypted: '%s'\n", encrypted);
     printf("Decrypted: '%s'\n", decrypted);
+
 
     free(kp);
     free(encrypted);

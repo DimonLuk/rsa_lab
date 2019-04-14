@@ -20,6 +20,8 @@ void get_augment(uint8_t first_prime, uint8_t second_prime, key_pair *kp);
 uint16_t get_euler_number(uint8_t first_prime, uint8_t second_prime);
 int gcd(uint16_t first_num, uint16_t second_num);
 void generate_key_pair(key_pair *kp);
+void multiply(uint8_t multiplier, uint8_t *result, uint32_t *length);
+uint64_t pow_(uint64_t number, uint64_t degree);
 void encrypt(
         void *original_raw_data,
         void *buffer,
