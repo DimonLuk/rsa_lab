@@ -56,12 +56,21 @@ extern inline int gcd(uint16_t first_num, uint16_t second_num) {
 }
 
 
-void generate_key_pair(key_pair *kp) {
+extern inline void generate_key_pair(uint16_t euler_number, key_pair *kp) {
+    do {
+        while(1) {
+            getentropy(&(kp->public_key), sizeof(kp->public_key));
+            if(kp->public_key < euler_number && gcd(euler_number, kp->public_key) == 1) break;
+        }
+        kp->private_key = (__key_t_)((1 + euler_number) / kp->public_key);
+    } while((kp->public_key * kp->private_key) % euler_number != 1);
 }
 
 
 int main() {
     uint8_t* numbers = (uint8_t*)malloc(2*sizeof(uint8_t));
+    key_pair *kp = (key_pair*)malloc(sizeof(key_pair));
+
     get_two_differenet_prime_numbers(numbers);
     printf("Number 1: %u\n", numbers[0]);
     printf("Number 2: %u\n", numbers[1]);
@@ -72,6 +81,11 @@ int main() {
     uint8_t euler_number = get_euler_number(numbers[0], numbers[1]);
     printf("Euler number: %u\n", euler_number);
 
+    generate_key_pair(euler_number, kp);
+    printf("Public key: %u\n", kp->public_key);
+    printf("Private key: %u\n", kp->private_key);
+
     free(numbers);
+    free(kp);
     return 0;
 }
