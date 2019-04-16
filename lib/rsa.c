@@ -79,15 +79,20 @@ void generate_key_pair(key_pair *kp) {
         }
         kp->private_key = (__key_t_)((1 + euler_number) / kp->public_key);
         if(kp->private_key == 1) continue;
+        if(kp->private_key == kp->public_key) kp->private_key = 0;
     } while((kp->public_key * kp->private_key) % euler_number != 1);
     free(numbers);
 }
 
 
-uint64_t pow_(uint64_t number, uint64_t degree) {
+uint64_t pow_(uint64_t number, uint64_t degree, uint64_t mod) {
     uint64_t result = 1;
-    for(int i=0; i < degree; i++) {
-        result *= number;
+    while(degree > 0) {
+        if(degree % 2 == 1) {
+            result = (result * number) % mod;
+        }
+        degree /= 2;
+        number = (number * number) % mod;
     }
     return result;
 }
@@ -100,12 +105,12 @@ void encrypt(
         key_pair *kp
         ) {
     uint8_t *origin = (uint8_t*)original_raw_data;
-    uint8_t *buf = (uint8_t*)buffer;
+    uint16_t *buf = (uint16_t*)buffer;
     uint64_t public_key = kp->public_key;
     uint64_t base = kp->base;
     for(uint32_t i = 0; i < number_of_bytes; i++) {
         uint64_t data = origin[i];
-        data = pow_((data % base), public_key) % base;
+        data = pow_(data, public_key, base);
         buf[i] = data;
     }
 }
@@ -117,13 +122,13 @@ void decrypt(
         uint32_t number_of_bytes,
         key_pair *kp
         ) {
-    uint8_t *origin = (uint8_t*)original_encrypted_data;
+    uint16_t *origin = (uint16_t*)original_encrypted_data;
     uint8_t *buf = (uint8_t*)buffer;
     uint64_t private_key = kp->private_key;
     uint64_t base = kp->base;
     for(uint32_t i = 0; i < number_of_bytes; i++) {
         uint64_t data = origin[i];
-        data = pow_((data % base), private_key) % base;
+        data = pow_(data, private_key, base);
         buf[i] = data;
     }
 }
@@ -137,6 +142,7 @@ int main() {
 
     generate_key_pair(kp);
 
+    printf("Base: %u\n", kp->base);
     printf("Public key: %u\n", kp->public_key);
     printf("Private key: %u\n", kp->private_key);
 
@@ -147,7 +153,7 @@ int main() {
             kp
             );
     decrypt(
-            (void*)data,
+            (void*)encrypted,
             (void*)decrypted,
             strlen(data),
             kp

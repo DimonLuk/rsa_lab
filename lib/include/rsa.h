@@ -11,7 +11,7 @@ typedef struct key_pairs {
     uint16_t base;
 } key_pair;
 
-const uint8_t FIRST_FOUR_BITS_MASK = 0x0F;
+const uint8_t FIRST_FOUR_BITS_MASK = 0x1F;
 
 
 int is_prime(uint8_t number);
@@ -21,7 +21,7 @@ uint16_t get_euler_number(uint8_t first_prime, uint8_t second_prime);
 int gcd(uint16_t first_num, uint16_t second_num);
 void generate_key_pair(key_pair *kp);
 void multiply(uint8_t multiplier, uint8_t *result, uint32_t *length);
-uint64_t pow_(uint64_t number, uint64_t degree);
+uint64_t pow_(uint64_t number, uint64_t degree, uint64_t mod);
 void encrypt(
         void *original_raw_data,
         void *buffer,
