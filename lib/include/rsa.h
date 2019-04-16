@@ -3,24 +3,26 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef uint16_t __key_t_;
+typedef uint16_t __key_parent_t_;
+typedef uint32_t __key_t_;
 
 typedef struct key_pairs {
     __key_t_ public_key;
     __key_t_ private_key;
-    uint16_t base;
+    __key_t_ base;
 } key_pair;
 
-const uint8_t FIRST_FOUR_BITS_MASK = 0x1F;
+
+const volatile uint32_t LENGTH_MULTIPLIER = 2;
 
 
-int is_prime(uint8_t number);
-void get_two_different_prime_numbers(uint8_t *buf);
-void get_augment(uint8_t first_prime, uint8_t second_prime, key_pair *kp);
-uint16_t get_euler_number(uint8_t first_prime, uint8_t second_prime);
-int gcd(uint16_t first_num, uint16_t second_num);
+int is_prime(__key_parent_t_ number);
+void get_two_different_prime_numbers(__key_parent_t_ *buf);
+void get_augment(__key_parent_t_ first_prime, __key_parent_t_ second_prime, key_pair *kp);
+__key_t_ get_euler_number(__key_parent_t_ first_prime, __key_parent_t_ second_prime);
+int gcd(__key_t_ first_num, __key_t_ second_num);
 void generate_key_pair(key_pair *kp);
-void multiply(uint8_t multiplier, uint8_t *result, uint32_t *length);
+void multiply(__key_parent_t_ multiplier, __key_parent_t_ *result, uint32_t *length);
 uint64_t pow_(uint64_t number, uint64_t degree, uint64_t mod);
 void encrypt(
         void *original_raw_data,

@@ -3,3 +3,4 @@ ctags
 pytags
 *.o
 build/
+lib/rsa
