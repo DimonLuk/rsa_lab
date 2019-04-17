@@ -38,5 +38,9 @@ void decrypt(
         message *buffer,
         key_pair *kp
         );
+key_pair* key_pair_allocate();
+message* message_alloc();
 message* create_message(void *msg, size_t msg_size);
+void free_message(message *msg);
+void free_key_pair(key_pair* kp);
 #endif

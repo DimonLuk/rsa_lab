@@ -146,8 +146,18 @@ void decrypt(
 }
 
 
+key_pair* key_pair_allocate() {
+    return (key_pair*)malloc(sizeof(key_pair));
+}
+
+
+message* message_alloc() {
+    return (message*)malloc(sizeof(message));
+}
+
+
 message* create_message(void *msg, size_t msg_size) {
-    message* result = (message*)malloc(sizeof(message));
+    message* result = message_alloc();
     if(msg_size % 2 != 0) {
         result->is_byte_added = 1;
         result->message = (void*)realloc(msg, msg_size + 1);
@@ -162,14 +172,23 @@ message* create_message(void *msg, size_t msg_size) {
 }
 
 
+void free_message(message *msg) {
+    free(msg->message);
+    free(msg);
+}
+void free_key_pair(key_pair *kp) {
+    free(kp);
+}
+
+
 int main() {
-    key_pair *kp = (key_pair*)malloc(sizeof(key_pair));
-    char *msg = "Привет мир!abcccc";
+    key_pair *kp = key_pair_allocate();
+    char *msg = "dsjghghdjghfdkjghfjdghfjdfgfdghfgfghdgftytyftyetfyty24237423648732684763277dfgshfgsdfgsdhgfhsgdfhsdgfhsgdfhgdsfhsdfhsdgf";
     char *pmsg = (char*)malloc(strlen(msg));
     strcpy(pmsg, msg);
     message *data = create_message((void*)pmsg, strlen(msg));
-    message *encrypted = (message*)malloc(sizeof(message));
-    message *decrypted = (message*)malloc(sizeof(message));
+    message *encrypted = message_alloc();
+    message *decrypted = message_alloc();
     generate_key_pair(kp);
 
     printf("Base: %u\n", kp->base);
@@ -192,8 +211,10 @@ int main() {
     printf("Decrypted: '%s'\n", (char*)decrypted->message);
 
 
-    free(kp);
-    free(encrypted);
-    free(decrypted);
+    free(pmsg);
+    free_key_pair(kp);
+    free_message(data);
+    free_message(encrypted);
+    free_message(decrypted);
     return 0;
 }
