@@ -4,3 +4,4 @@ pytags
 *.o
 build/
 lib/rsa
+build

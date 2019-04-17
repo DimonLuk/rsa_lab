@@ -1,4 +1,4 @@
-#include "./include/rsa.h"
+#include "./include/rsa_private.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -146,7 +146,7 @@ void decrypt(
 }
 
 
-key_pair* key_pair_allocate() {
+key_pair* key_pair_alloc() {
     return (key_pair*)malloc(sizeof(key_pair));
 }
 
@@ -179,42 +179,40 @@ void free_message(message *msg) {
 void free_key_pair(key_pair *kp) {
     free(kp);
 }
-
-
-int main() {
-    key_pair *kp = key_pair_allocate();
-    char *msg = "dsjghghdjghfdkjghfjdghfjdfgfdghfgfghdgftytyftyetfyty24237423648732684763277dfgshfgsdfgsdhgfhsgdfhsdgfhsgdfhgdsfhsdfhsdgf";
-    char *pmsg = (char*)malloc(strlen(msg));
-    strcpy(pmsg, msg);
-    message *data = create_message((void*)pmsg, strlen(msg));
-    message *encrypted = message_alloc();
-    message *decrypted = message_alloc();
-    generate_key_pair(kp);
-
-    printf("Base: %u\n", kp->base);
-    printf("Public key: %u\n", kp->public_key);
-    printf("Private key: %u\n", kp->private_key);
-
-    encrypt(
-            data,
-            encrypted,
-            kp
-            );
-    decrypt(
-            encrypted,
-            decrypted,
-            kp
-            );
-
-    printf("Original: '%s'\n", (char*)data->message);
-    printf("Encrypted: '%s'\n", (char*)encrypted->message);
-    printf("Decrypted: '%s'\n", (char*)decrypted->message);
-
-
-    free(pmsg);
-    free_key_pair(kp);
-    free_message(data);
-    free_message(encrypted);
-    free_message(decrypted);
-    return 0;
-}
+// int main() {
+//     key_pair *kp = key_pair_alloc();
+//     char *msg = "dsjghghdjghfdkjghfjdghfjdfgfdghfgfghdgftytyftyetfyty24237423648732684763277dfgshfgsdfgsdhgfhsgdfhsdgfhsgdfhgdsfhsdfhsdgf";
+//     char *pmsg = (char*)malloc(strlen(msg));
+//     strcpy(pmsg, msg);
+//     message *data = create_message((void*)pmsg, strlen(msg));
+//     message *encrypted = message_alloc();
+//     message *decrypted = message_alloc();
+//     generate_key_pair(kp);
+//
+//     printf("Base: %u\n", kp->base);
+//     printf("Public key: %u\n", kp->public_key);
+//     printf("Private key: %u\n", kp->private_key);
+//
+//     encrypt(
+//             data,
+//             encrypted,
+//             kp
+//             );
+//     decrypt(
+//             encrypted,
+//             decrypted,
+//             kp
+//             );
+//
+//     printf("Original: '%s'\n", (char*)data->message);
+//     printf("Encrypted: '%s'\n", (char*)encrypted->message);
+//     printf("Decrypted: '%s'\n", (char*)decrypted->message);
+//
+//
+//     free(pmsg);
+//     free_key_pair(kp);
+//     free_message(data);
+//     free_message(encrypted);
+//     free_message(decrypted);
+//     return 0;
+// }
