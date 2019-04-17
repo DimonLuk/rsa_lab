@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
-project(os_rsa_lab VERSION 1.0.0)
 if($ENV{MODE} STREQUAL "static")
   ADD_LIBRARY(rsa STATIC rsa.c)
 elseif($ENV{MODE} STREQUAL "shared")
