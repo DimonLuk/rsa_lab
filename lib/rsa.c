@@ -55,7 +55,7 @@ int gcd(__key_t_ first_num, __key_t_ second_num) {
 }
 
 
-void generate_key_pair(key_pair *kp) {
+void _generate_key_pair(key_pair *kp) {
     __key_parent_t_* numbers = (__key_parent_t_*)malloc(2*sizeof(__key_parent_t_));
     get_two_differenet_prime_numbers(numbers);
     get_augment(numbers[0], numbers[1], kp);
@@ -68,7 +68,7 @@ void generate_key_pair(key_pair *kp) {
             kp->public_key += 1;
             safety_counter++;
         }
-        if(kp->public_key >= euler_number || kp->public_key == 1 || safety_counter >= 1000) {
+        if(kp->public_key >= euler_number || kp->public_key <= 3000 || safety_counter >= 1000 || kp->base < 1000000000L) {
             get_two_differenet_prime_numbers(numbers);
             get_augment(numbers[0], numbers[1], kp);
             euler_number = get_euler_number(numbers[0], numbers[1]);
@@ -82,7 +82,7 @@ void generate_key_pair(key_pair *kp) {
             kp->private_key = 0;
             safety_counter = 0;
         }
-    } while((kp->public_key * kp->private_key) % euler_number != 1);
+    } while((kp->public_key * kp->private_key) % euler_number != 1 || kp->public_key <= kp->private_key);
     free(numbers);
 }
 
@@ -103,14 +103,15 @@ uint64_t pow_(uint64_t number, uint64_t degree, uint64_t mod) {
 void encrypt(
         void *original_raw_data,
         void *buffer,
-        uint32_t number_of_bytes,
+        size_t number_of_bytes,
         key_pair *kp
         ) {
     __key_parent_t_ *origin = (__key_parent_t_*)original_raw_data;
     __key_t_ *buf = (__key_t_*)buffer;
     uint64_t public_key = kp->public_key;
     uint64_t base = kp->base;
-    for(uint32_t i = 0; i < number_of_bytes; i++) {
+    size_t amount_of_iterations = number_of_bytes / sizeof(__key_parent_t_);
+    for(uint32_t i = 0; i < amount_of_iterations; i++) {
         uint64_t data = origin[i];
         data = pow_(data, public_key, base);
         buf[i] = data;
@@ -121,15 +122,15 @@ void encrypt(
 void decrypt(
         void *original_encrypted_data,
         void *buffer,
-        uint32_t number_of_bytes,
+        size_t number_of_bytes,
         key_pair *kp
         ) {
     __key_t_ *origin = (__key_t_*)original_encrypted_data;
     __key_parent_t_ *buf = (__key_parent_t_*)buffer;
-    number_of_bytes /= 2;
     uint64_t private_key = kp->private_key;
     uint64_t base = kp->base;
-    for(uint32_t i = 0; i < number_of_bytes; i++) {
+    size_t amount_of_iterations = number_of_bytes / sizeof(__key_t_);
+    for(uint32_t i = 0; i < amount_of_iterations; i++) {
         uint64_t data = origin[i];
         data = pow_(data, private_key, base);
         buf[i] = data;
@@ -139,11 +140,11 @@ void decrypt(
 
 int main() {
     key_pair *kp = (key_pair*)malloc(sizeof(key_pair));
-    char *data = "Test";
-    char *encrypted = (char*)malloc(LENGTH_MULTIPLIER*strlen(data));
-    char *decrypted = (char*)malloc(strlen(data));
+    char *data = "Testaaaaaaaa";
+    size_t encrypted_size = 4 * strlen(data) * sizeof(char);
+    char *encrypted = (char*)malloc(encrypted_size);
 
-    generate_key_pair(kp);
+    _generate_key_pair(kp);
 
     printf("Base: %u\n", kp->base);
     printf("Public key: %u\n", kp->public_key);
@@ -152,13 +153,15 @@ int main() {
     encrypt(
             (void*)data,
             (void*)encrypted,
-            strlen(data),
+            encrypted_size,
             kp
             );
+    size_t decrypted_size = strlen(encrypted) * sizeof(char) / 2;
+    char *decrypted = (char*)malloc(decrypted_size);
     decrypt(
             (void*)encrypted,
             (void*)decrypted,
-            strlen(encrypted),
+            decrypted_size,
             kp
             );
 
