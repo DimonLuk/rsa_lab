@@ -55,7 +55,7 @@ int gcd(__key_t_ first_num, __key_t_ second_num) {
 }
 
 
-void _generate_key_pair(key_pair *kp) {
+void generate_key_pair(key_pair *kp) {
     __key_parent_t_* numbers = (__key_parent_t_*)malloc(2*sizeof(__key_parent_t_));
     get_two_differenet_prime_numbers(numbers);
     get_augment(numbers[0], numbers[1], kp);
@@ -101,18 +101,20 @@ uint64_t pow_(uint64_t number, uint64_t degree, uint64_t mod) {
 
 
 void encrypt(
-        void *original_raw_data,
-        void *buffer,
-        size_t number_of_bytes,
+        message *original_raw_data,
+        message *buffer,
         key_pair *kp
         ) {
-    __key_parent_t_ *origin = (__key_parent_t_*)original_raw_data;
-    __key_t_ *buf = (__key_t_*)buffer;
+    __key_parent_t_ *origin = (__key_parent_t_*)(original_raw_data->message);
+    __key_t_ *buf = (__key_t_*)malloc(2 * original_raw_data->size);
+    buffer->message = (void*)buf;
+    buffer->is_byte_added = original_raw_data->is_byte_added;
+    buffer->size = 2 * original_raw_data->size;
     uint64_t public_key = kp->public_key;
     uint64_t base = kp->base;
-    size_t amount_of_iterations = number_of_bytes / sizeof(__key_parent_t_);
+    size_t amount_of_iterations = original_raw_data->size / sizeof(__key_parent_t_);
     for(uint32_t i = 0; i < amount_of_iterations; i++) {
-        uint64_t data = origin[i];
+        __key_t_ data = origin[i];
         data = pow_(data, public_key, base);
         buf[i] = data;
     }
@@ -120,54 +122,74 @@ void encrypt(
 
 
 void decrypt(
-        void *original_encrypted_data,
-        void *buffer,
-        size_t number_of_bytes,
+        message *original_encrypted_data,
+        message *buffer,
         key_pair *kp
         ) {
-    __key_t_ *origin = (__key_t_*)original_encrypted_data;
-    __key_parent_t_ *buf = (__key_parent_t_*)buffer;
+    __key_t_ *origin = (__key_t_*)(original_encrypted_data->message);
+    __key_parent_t_ *buf = (__key_parent_t_*)malloc(original_encrypted_data->size / 2);
+    buffer->message = (void*)buf;
+    buffer->is_byte_added = original_encrypted_data->is_byte_added;
+    buffer->size = original_encrypted_data->size / 2;
     uint64_t private_key = kp->private_key;
     uint64_t base = kp->base;
-    size_t amount_of_iterations = number_of_bytes / sizeof(__key_t_);
+    size_t amount_of_iterations = original_encrypted_data->size / sizeof(__key_t_);
     for(uint32_t i = 0; i < amount_of_iterations; i++) {
         uint64_t data = origin[i];
         data = pow_(data, private_key, base);
         buf[i] = data;
     }
+    if(buffer->is_byte_added) {
+        buffer->size--;
+        buffer->message = (void*)realloc((void*)buf, buffer->size);
+    }
+}
+
+
+message* create_message(void *msg, size_t msg_size) {
+    message* result = (message*)malloc(sizeof(message));
+    if(msg_size % 2 != 0) {
+        result->is_byte_added = 1;
+        result->message = (void*)realloc(msg, msg_size + 1);
+        ((uint8_t*)(result->message))[msg_size] = 1;
+        result->size = msg_size + 1;
+    } else {
+        result->message = msg;
+        result->is_byte_added = 0;
+        result->size = msg_size;
+    }
+    return result;
 }
 
 
 int main() {
     key_pair *kp = (key_pair*)malloc(sizeof(key_pair));
-    char *data = "Testaaaaaaaa";
-    size_t encrypted_size = 4 * strlen(data) * sizeof(char);
-    char *encrypted = (char*)malloc(encrypted_size);
-
-    _generate_key_pair(kp);
+    char *msg = "Привет мир!abcccc";
+    char *pmsg = (char*)malloc(strlen(msg));
+    strcpy(pmsg, msg);
+    message *data = create_message((void*)pmsg, strlen(msg));
+    message *encrypted = (message*)malloc(sizeof(message));
+    message *decrypted = (message*)malloc(sizeof(message));
+    generate_key_pair(kp);
 
     printf("Base: %u\n", kp->base);
     printf("Public key: %u\n", kp->public_key);
     printf("Private key: %u\n", kp->private_key);
 
     encrypt(
-            (void*)data,
-            (void*)encrypted,
-            encrypted_size,
+            data,
+            encrypted,
             kp
             );
-    size_t decrypted_size = strlen(encrypted) * sizeof(char) / 2;
-    char *decrypted = (char*)malloc(decrypted_size);
     decrypt(
-            (void*)encrypted,
-            (void*)decrypted,
-            decrypted_size,
+            encrypted,
+            decrypted,
             kp
             );
 
-    printf("Original: '%s'\n", data);
-    printf("Encrypted: '%s'\n", encrypted);
-    printf("Decrypted: '%s'\n", decrypted);
+    printf("Original: '%s'\n", (char*)data->message);
+    printf("Encrypted: '%s'\n", (char*)encrypted->message);
+    printf("Decrypted: '%s'\n", (char*)decrypted->message);
 
 
     free(kp);
