@@ -1,4 +1,5 @@
 #include "../lib/include/rsa.h"
+#include "include/src.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -31,6 +32,9 @@ int main() {
     printf("Original: '%s'\n", (char*)data->message);
     printf("Encrypted: '%s'\n", (char*)encrypted->message);
     printf("Decrypted: '%s'\n", (char*)decrypted->message);
+
+    printf("LANG_LOCAL: %s\n", LANG_LOCAL);
+    printf("LOAD_AS %d\n", LOAD_AS);
 
 
     free(pmsg);

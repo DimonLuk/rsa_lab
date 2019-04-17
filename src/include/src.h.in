@@ -1,0 +1,2 @@
+#cmakedefine LANG_LOCAL @LANG_LOCAL@
+#cmakedefine LOAD_AS @LOAD_AS@
