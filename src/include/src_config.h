@@ -1,9 +1,11 @@
 /* #undef LANG_LOCAL */
-#define LOAD_AS 1
-#define INVITE "Введите сообщение: "
-#define BASE "Базис: "
-#define PUBLIC_KEY "Публичный ключ: "
-#define PRIVATE_KEY "Приватный ключ: "
-#define ORIGINAL "Оригинальное сообщение (дополненое): "
-#define ENCRYPTED "Закодированное: "
-#define DECRYPTED "Розкодированное: "
+#define LOAD_AS 2
+#define INVITE "Type a message: "
+#define BASE "Base: "
+#define PUBLIC_KEY "Public key: "
+#define PRIVATE_KEY "Private key: "
+#define ORIGINAL "Original (augmented): "
+#define ENCRYPTED "Encrypted: "
+#define DECRYPTED "Decrypted: "
+#define MODE_STYLE_M "Module"
+#define MODE_STYLE_L "Library"

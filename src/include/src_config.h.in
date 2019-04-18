@@ -7,3 +7,5 @@
 #cmakedefine ORIGINAL @ORIGINAL@
 #cmakedefine ENCRYPTED @ENCRYPTED@
 #cmakedefine DECRYPTED @DECRYPTED@
+#cmakedefine MODE_STYLE_M @MODE_STYLE_M@
+#cmakedefine MODE_STYLE_L @MODE_STYLE_L@
