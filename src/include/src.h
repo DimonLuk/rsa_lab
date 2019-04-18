@@ -1,2 +1,5 @@
-#define LANG_LOCAL "test"
-#define LOAD_AS 2
+#ifndef _SRC_H_
+#define _SRC_H_
+#include "./src_config.h"
+#include <stdint.h>
+#endif

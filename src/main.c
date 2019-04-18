@@ -4,12 +4,13 @@
 #include <string.h>
 
 
-int main() {
+int main(int argc, char *argv[]) {
     key_pair *kp = key_pair_alloc();
-    char *msg = "Test";
-    char *pmsg = (char*)malloc(strlen(msg));
-    strcpy(pmsg, msg);
-    message *data = create_message((void*)pmsg, strlen(msg));
+    printf("Type a message: ");
+    char *msg;
+    scanf("%m[^\n]s", &msg);
+
+    message *data = create_message((void*)msg, strlen(msg));
     message *encrypted = message_alloc();
     message *decrypted = message_alloc();
     generate_key_pair(kp);
@@ -18,26 +19,15 @@ int main() {
     printf("Public key: %u\n", kp->public_key);
     printf("Private key: %u\n", kp->private_key);
 
-    encrypt(
-            data,
-            encrypted,
-            kp
-            );
-    decrypt(
-            encrypted,
-            decrypted,
-            kp
-            );
+    encrypt(data, encrypted, kp);
+    decrypt(encrypted, decrypted, kp);
 
     printf("Original: '%s'\n", (char*)data->message);
     printf("Encrypted: '%s'\n", (char*)encrypted->message);
     printf("Decrypted: '%s'\n", (char*)decrypted->message);
 
-    printf("LANG_LOCAL: %s\n", LANG_LOCAL);
-    printf("LOAD_AS %d\n", LOAD_AS);
 
-
-    free(pmsg);
+    free(msg);
     free_key_pair(kp);
     free_message(data);
     free_message(encrypted);
