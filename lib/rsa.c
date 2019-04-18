@@ -29,15 +29,15 @@ void get_two_differenet_prime_numbers(__key_parent_t_ *buf) {
 
     while(1) {
         getentropy(&second_prime, sizeof(__key_parent_t_));
-        if(second_prime > 5 && is_prime(second_prime) && second_prime != first_prime) break;
+        if(second_prime > 5 && second_prime != first_prime && is_prime(second_prime)) break;
     }
     buf[1] = second_prime;
 }
 
 
 void get_augment(__key_parent_t_ first_prime, __key_parent_t_ second_prime, key_pair *kp) {
-    __key_parent_t_ fp = (__key_t_)first_prime;
-    __key_parent_t_ sp = (__key_t_)second_prime;
+    __key_t_ fp = (__key_t_)first_prime;
+    __key_t_ sp = (__key_t_)second_prime;
     kp->base = fp * sp;
 }
 
@@ -56,7 +56,7 @@ int gcd(__key_t_ first_num, __key_t_ second_num) {
 
 
 void generate_key_pair(key_pair *kp) {
-    __key_parent_t_* numbers = (__key_parent_t_*)malloc(2*sizeof(__key_parent_t_));
+    __key_parent_t_* numbers = (__key_parent_t_*)malloc(2*sizeof(__key_parent_t_)); // Get memory for two primes
     get_two_differenet_prime_numbers(numbers);
     get_augment(numbers[0], numbers[1], kp);
     __key_t_ euler_number = get_euler_number(numbers[0], numbers[1]);
@@ -107,12 +107,12 @@ void encrypt(
         ) {
     __key_parent_t_ *origin = (__key_parent_t_*)(original_raw_data->message);
     __key_t_ *buf = (__key_t_*)malloc(2 * original_raw_data->size);
-    buffer->message = (void*)buf;
+    buffer->message = (void*)buf; // Store address of encrypted msg to buffer message
     buffer->is_byte_added = original_raw_data->is_byte_added;
     buffer->size = 2 * original_raw_data->size;
     uint64_t public_key = kp->public_key;
     uint64_t base = kp->base;
-    size_t amount_of_iterations = original_raw_data->size / sizeof(__key_parent_t_);
+    size_t amount_of_iterations = original_raw_data->size / sizeof(__key_parent_t_); // amount of iterations required to encrypte message
     for(uint32_t i = 0; i < amount_of_iterations; i++) {
         __key_t_ data = origin[i];
         data = pow_(data, public_key, base);
@@ -161,7 +161,7 @@ message* create_message(void *msg, size_t msg_size) {
     if(msg_size % 2 != 0) {
         result->is_byte_added = 1;
         result->message = (void*)realloc(msg, msg_size + 1);
-        ((uint8_t*)(result->message))[msg_size] = 1;
+        ((uint8_t*)(result->message))[msg_size] = 1; // write 1 to the last byte
         result->size = msg_size + 1;
     } else {
         result->message = msg;
