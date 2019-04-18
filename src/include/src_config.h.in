@@ -1,2 +1,9 @@
 #cmakedefine LANG_LOCAL @LANG_LOCAL@
 #cmakedefine LOAD_AS @LOAD_AS@
+#cmakedefine INVITE @INVITE@
+#cmakedefine BASE @BASE@
+#cmakedefine PUBLIC_KEY @PUBLIC_KEY@
+#cmakedefine PRIVATE_KEY @PRIVATE_KEY@
+#cmakedefine ORIGINAL @ORIGINAL@
+#cmakedefine ENCRYPTED @ENCRYPTED@
+#cmakedefine DECRYPTED @DECRYPTED@

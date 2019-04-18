@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]) {
     key_pair *kp = key_pair_alloc();
-    printf("Type a message: ");
+    printf("%s", INVITE);
     char *msg;
     scanf("%m[^\n]s", &msg);
 
@@ -15,16 +15,16 @@ int main(int argc, char *argv[]) {
     message *decrypted = message_alloc();
     generate_key_pair(kp);
 
-    printf("Base: %u\n", kp->base);
-    printf("Public key: %u\n", kp->public_key);
-    printf("Private key: %u\n", kp->private_key);
+    printf("%s%u\n", BASE, kp->base);
+    printf("%s%u\n", PUBLIC_KEY, kp->public_key);
+    printf("%s%u\n", PRIVATE_KEY, kp->private_key);
 
     encrypt(data, encrypted, kp);
     decrypt(encrypted, decrypted, kp);
 
-    printf("Original: '%s'\n", (char*)data->message);
-    printf("Encrypted: '%s'\n", (char*)encrypted->message);
-    printf("Decrypted: '%s'\n", (char*)decrypted->message);
+    printf("%s'%s'\n", ORIGINAL, (char*)data->message);
+    printf("%s'%s'\n", ENCRYPTED, (char*)encrypted->message);
+    printf("%s'%s'\n", DECRYPTED, (char*)decrypted->message);
 
 
     free(msg);
